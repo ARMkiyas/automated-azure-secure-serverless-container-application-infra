@@ -66,16 +66,39 @@ resource "azurerm_container_app" "this" {
 
       }
 
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "db-url"
+
+      }
+
+
     }
   }
 
+  secret {
+    name                = "db-url"
+    key_vault_secret_id = azurerm_key_vault_secret.db_url.id
+    identity            = azurerm_user_assigned_identity.this.id
+  }
 
+  # dynamic "secret" {
+  #   for_each = azurerm_key_vault_secret.this
+  #   content {
+  #     name  = secret.value.name
+  #     value = secret.value.value
+  #   }
 
-
-  # identity {
-  #   type         = "UserAssigned"
-  #   identity_ids = [azurerm_user_assigned_identity.this.id]
   # }
+
+
+
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.this.id]
+  }
 
 
 
