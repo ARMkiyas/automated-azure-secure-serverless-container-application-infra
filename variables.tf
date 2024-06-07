@@ -160,6 +160,21 @@ variable "storage_conatiner_name" {
 }
 
 
+variable "sms_queue_name" {
+  type        = string
+  default     = "sms-to-send"
+  description = "sms queue name"
+
+}
+
+variable "email_queue_name" {
+  type        = string
+  default     = "email-to-send"
+  description = "email queue name"
+
+}
+
+
 variable "kayvaultname" {
   type        = string
   default     = "keyvault"
