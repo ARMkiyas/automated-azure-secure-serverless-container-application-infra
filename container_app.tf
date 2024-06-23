@@ -68,10 +68,20 @@ resource "azurerm_container_app" "this" {
 
 
       env {
-        name        = "DATABASE_URL"
+        name        = "DATABASE_URL_PRIVATE"
         secret_name = "db-url"
 
       }
+
+      dynamic "env" {
+        for_each = azurerm_key_vault_secret.this
+
+        content {
+          name        = upper(join("_", split("-", env.value.name))) // replacing symbol - to _ and convert to uppercase
+          secret_name = env.value.name
+        }
+      }
+
 
 
     }
@@ -83,14 +93,16 @@ resource "azurerm_container_app" "this" {
     identity            = azurerm_user_assigned_identity.this.id
   }
 
-  # dynamic "secret" {
-  #   for_each = azurerm_key_vault_secret.this
-  #   content {
-  #     name  = secret.value.name
-  #     value = secret.value.value
-  #   }
+  dynamic "secret" {
+    for_each = azurerm_key_vault_secret.this
+    content {
+      name                = secret.value.name
+      value               = secret.value.value
+      key_vault_secret_id = secret.value.id
+      identity            = azurerm_user_assigned_identity.this.id
+    }
 
-  # }
+  }
 
 
 
@@ -108,4 +120,9 @@ resource "azurerm_container_app" "this" {
 
 
 
+
+
 }
+
+
+

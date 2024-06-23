@@ -120,7 +120,7 @@ locals {
 
 }
 
-resource "azurerm_key_vault_secret" "all_secrets" {
+resource "azurerm_key_vault_secret" "storage_all_secrets" {
   for_each     = local.secrets
   key_vault_id = azurerm_key_vault.this.id
   name         = each.value.name
