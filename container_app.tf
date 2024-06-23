@@ -30,6 +30,33 @@ resource "azurerm_container_app_environment" "this" {
 
 
 
+locals {
+  all_app_secrets = merge(
+    { for secret in azurerm_key_vault_secret.this : secret.name => {
+      id    = secret.id,
+      value = secret.value
+      name  = secret.name
+      }
+    },
+    { for secret in azurerm_key_vault_secret.storage_all_secrets : secret.name => {
+      id    = secret.id,
+      value = secret.value
+      name  = secret.name
+      }
+    },
+    {
+      "DB_URL" = {
+        id    = azurerm_key_vault_secret.db_url.id
+        value = azurerm_key_vault_secret.db_url.value
+        name  = azurerm_key_vault_secret.db_url.name
+      }
+    }
+
+  )
+
+}
+
+
 resource "azurerm_container_app" "this" {
   name                         = var.con-app-name
   resource_group_name          = var.resGroup
@@ -66,31 +93,31 @@ resource "azurerm_container_app" "this" {
 
       }
 
-
-      env {
-        name        = "DATABASE_URL"
-        secret_name = "db-url"
-
+      dynamic "env" {
+        for_each = local.all_app_secrets
+        content {
+          name        = upper(join("_", split("-", env.value.name))) // replacing symbol - to _ and convert to uppercase
+          secret_name = env.value.name
+        }
       }
+
 
 
     }
   }
 
-  secret {
-    name                = "db-url"
-    key_vault_secret_id = azurerm_key_vault_secret.db_url.id
-    identity            = azurerm_user_assigned_identity.this.id
+
+  dynamic "secret" {
+    for_each = local.all_app_secrets
+
+    content {
+      name                = secret.value.name
+      value               = secret.value.value
+      key_vault_secret_id = secret.value.id
+      identity            = azurerm_user_assigned_identity.this.id
+    }
+
   }
-
-  # dynamic "secret" {
-  #   for_each = azurerm_key_vault_secret.this
-  #   content {
-  #     name  = secret.value.name
-  #     value = secret.value.value
-  #   }
-
-  # }
 
 
 
@@ -108,4 +135,9 @@ resource "azurerm_container_app" "this" {
 
 
 
+
+
 }
+
+
+

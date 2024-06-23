@@ -195,11 +195,7 @@ variable "keyvault_secrets" {
     value = string
   }))
 
-  default = [{
-    name : "sample-secret"
-    value : "sample_value"
-  }]
-
+  default     = []
   description = "keyvault secrets"
 
 }

@@ -42,7 +42,7 @@ resource "azurerm_role_assignment" "client_access" {
 
 
 resource "azurerm_user_assigned_identity" "this" {
-  
+
   name                = "${var.kayvaultname}-${var.env}-identity"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
@@ -58,7 +58,7 @@ resource "azurerm_role_assignment" "this" {
 }
 
 
-
+// for other extra other secrets
 resource "azurerm_key_vault_secret" "this" {
   count        = length(var.keyvault_secrets)
   key_vault_id = azurerm_key_vault.this.id

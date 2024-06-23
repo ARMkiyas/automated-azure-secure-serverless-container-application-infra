@@ -26,7 +26,12 @@ terraform {
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   # skip_provider_registration = true # This is only required when the User, Service Principal, or Identity running Terraform lacks the permissions to register Azure Resource Providers.
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+      recover_soft_deleted_secrets = false
+    }
+  }
 }
 
 
