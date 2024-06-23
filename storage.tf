@@ -126,6 +126,11 @@ resource "azurerm_key_vault_secret" "storage_all_secrets" {
   name         = each.value.name
   value        = each.value.value
 
+  lifecycle {
+    ignore_changes = [value]
+
+  }
+
   depends_on = [azurerm_role_assignment.client_access, azurerm_storage_queue.sms_queue, azurerm_storage_queue.email_queue, data.azurerm_storage_account_sas.blob_read_sas]
 }
 
