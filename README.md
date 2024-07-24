@@ -222,6 +222,3 @@ We welcome contributions to enhance and improve this project! Please fork the re
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-
-Feel free to further customize this README to better suit the specifics of your project and its current development status.
